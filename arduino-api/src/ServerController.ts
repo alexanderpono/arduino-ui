@@ -1,5 +1,6 @@
 import { SerialCommand } from './Serial.types';
 import { RestServer } from './ports/RestServer';
+import { RGB } from './ports/RestServer.types';
 import { Serial } from './ports/Serial';
 import { Ws } from './ports/Ws';
 import { WebSocket } from 'ws';
@@ -15,11 +16,6 @@ const ERR = {
     SERVER_ERR: { error: 'Server error' },
     VALIDATE_ERR: (data) => ({ error: 'Validate error', data })
 };
-interface RGB {
-    r: number;
-    g: number;
-    b: number;
-}
 
 interface JsonMessageFromUI {
     action: string;
@@ -28,7 +24,6 @@ interface JsonMessageFromUI {
 export class ServerController {
     private serial: Serial;
     private rest: RestServer;
-    // private a: WsMessage;
 
     private ws: Ws;
     private wsServer;
@@ -46,6 +41,7 @@ export class ServerController {
     }
 
     listenersTo0 = [];
+    listenersTo1 = [];
     onMessageFromSerial = (text: string) => {
         console.log('onMessageFromSerial:', text.trim());
         if (
@@ -54,6 +50,18 @@ export class ServerController {
         ) {
             if (this.listenersTo0.length) {
                 const handler = this.listenersTo0.shift();
+                if (typeof handler === 'function') {
+                    handler(text.trim());
+                }
+            }
+        }
+
+        if (
+            text.trim().split(',').length > 1 &&
+            text.trim().split(',')[0] === '' + SerialCommand.GET_RGB
+        ) {
+            if (this.listenersTo1.length) {
+                const handler = this.listenersTo1.shift();
                 if (typeof handler === 'function') {
                     handler(text.trim());
                 }
@@ -80,14 +88,31 @@ export class ServerController {
         }
     };
 
-    onRestGetLight = (req, response) => {
-        response.send('Hello World');
-        this.serial.send('0,0,0,0\n');
+    onRestGetLight = (req, res) => {
+        // res.send('Hello World');
+        this.serial.send('1\n');
+        this.listenersTo1.push((text) => {
+            const serialAnswerAr = text.split(',');
+            if (serialAnswerAr[1] === '200') {
+                putRgbSchema
+                    .validate({
+                        r: serialAnswerAr[2],
+                        g: serialAnswerAr[3],
+                        b: serialAnswerAr[4]
+                    })
+                    .then((validRgb: RGB) => {
+                        res.send(validRgb);
+                    })
+                    .catch((er) => {
+                        res.status(500).send(er);
+                    });
+            } else {
+                res.status(500).send(text);
+            }
+        });
     };
 
     onRestPutLight = (req, res) => {
-        console.log('onRestPutLight req.body=', req.body);
-
         putRgbSchema
             .validate(req.body)
             .then((validRgb: RGB) => {
@@ -121,5 +146,10 @@ export class ServerController {
                     res.status(500).send(ERR.SERVER_ERR);
                 }
             });
+    };
+
+    onRestGetReset = (req, response) => {
+        response.send({});
+        this.serial.send('0,0,0,0\n');
     };
 }

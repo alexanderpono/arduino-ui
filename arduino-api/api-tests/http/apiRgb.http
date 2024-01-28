@@ -1,10 +1,10 @@
 
-GET http://localhost:3100/api/light
+GET http://localhost:3100/api/rgb
 
 ###
 
 
-PUT http://localhost:3100/api/light
+PUT http://localhost:3100/api/rgb
 Content-Type: application/json
 
 {
@@ -16,7 +16,7 @@ Content-Type: application/json
 ###
 
 
-PUT http://localhost:3100/api/light
+PUT http://localhost:3100/api/rgb
 Content-Type: application/json
 
 {
