@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpackRules = require('./webpackRules');
 
 module.exports = {
-    entry: './ui-src/index.tsx',
+    entry: './src/ui.tsx',
     devtool: 'source-map',
     resolve: {
         extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
@@ -13,7 +13,7 @@ module.exports = {
         }
     },
     output: {
-        path: path.join(__dirname, '/ui-dist'),
+        path: path.join(__dirname, '/temp/ui-dist'),
         filename: 'index.js'
     },
     module: {

@@ -2,8 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@ui-src/*": ["ui-src/*"],
-      "@api-src/*": ["api-src/*"]
+      "@src/*": ["src/*"]
     },
     "target": "es6",
     "module": "commonjs",
@@ -13,12 +12,12 @@
     "strict": true,
     "esModuleInterop": true,
     "removeComments": true,
-    "outDir": "dist",
+    "outDir": "temp/dist",
     "noImplicitAny": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": [ "api-src/**/*", "ui-src/components"  ],
+  "include": [ "src/components"  ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts",

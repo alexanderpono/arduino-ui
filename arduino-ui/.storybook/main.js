@@ -4,7 +4,7 @@ const custom = require('../webpack.config.js');
 const webpackRules = require("../webpackRules");
 
 module.exports = {
-  stories: ['../ui-src/**/*.stories.tsx', '../ui-src/**/*.stories.js'],
+  stories: ['../src/**/*.stories.tsx', '../src/**/*.stories.js'],
   addons: [
     '@storybook/addon-actions',
     '@storybook/addon-links',

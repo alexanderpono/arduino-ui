@@ -16,7 +16,7 @@ module.exports = {
     ],
     plugins: [
         ['@babel/plugin-proposal-class-properties'],
-        ['module-alias', { src: './ui-src', expose: '@ui-src' }]
+        ['module-alias', { src: './src', expose: '@src' }]
     ],
     env: {
         production: {

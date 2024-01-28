@@ -1,3 +1,5 @@
 coverage
 output
 node_modules
+temp
+dist
