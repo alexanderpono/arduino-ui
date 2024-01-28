@@ -1,3 +1,5 @@
+import { WsMessage } from './WsMessage';
+import { RestServer } from './ports/RestServer';
 import { Serial } from './ports/Serial';
 import { Ws } from './ports/Ws';
 import { WebSocket } from 'ws';
@@ -8,26 +10,31 @@ interface JsonMessageFromUI {
 }
 export class ServerController {
     private serial: Serial;
+    private rest: RestServer;
+    private a: WsMessage;
+
     private ws: Ws;
     private wsServer;
-    constructor() {
+    constructor(private restPort: number) {
         this.serial = new Serial(this);
         this.ws = new Ws(this);
+        this.rest = new RestServer(this.restPort, this);
 
         const port = 3000;
-        console.log(`ServerController: listening ${port}`);
+        console.log(`ServerController: listening WS ${port}, REST ${restPort}`);
 
         this.wsServer = new WebSocket.Server({ port });
         this.wsServer.on('connection', this.ws.onConnect);
+        this.rest.run();
     }
 
     onMessageFromSerial = (text: string) => {
-        console.log('ServerController: Serial:', text);
-        try {
-            this.ws.send(JSON.stringify({ fromSerial: text }));
-        } catch (e) {
-            console.log('ServerController: Error send to WS:', text);
-        }
+        // console.log('ServerController: Serial:', text);
+        // try {
+        //     this.ws.send(JSON.stringify({ fromSerial: text }));
+        // } catch (e) {
+        //     console.log('ServerController: Error send to WS:', text);
+        // }
     };
 
     onWsMesage = (message: string) => {
@@ -48,4 +55,17 @@ export class ServerController {
             console.log('Ws: Ошибка', error);
         }
     };
+
+    onRestGetLight = (req, response) => {
+        response.send('Hello World');
+        this.serial.send('0,0,0\n');
+    };
+
+    onRestPutLight = (req, response) => {
+        console.log('onRestPutLight req=', req);
+        // PutLight
+        response.send('Hello World');
+        this.serial.send('0,0,255\n');
+    };
+
 }

@@ -3,7 +3,8 @@ import { ServerController } from './ServerController';
 let server: ServerController;
 class Program {
     async main() {
-        server = new ServerController();
+        const restPort = 3100;
+        server = new ServerController(restPort);
     }
 
     static create(): Program {
